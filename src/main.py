@@ -1,4 +1,12 @@
-import cli
-import interface_functions as ifunc
+import sys
+from windows.main_windows import MainWindow
+from PyQt5.QtWidgets import QApplication
 
-ifunc.run(cli.args)
+def main():
+    app = QApplication(sys.argv)
+    window = MainWindow()
+    window.show()
+    sys.exit(app.exec_())
+
+if __name__ == "__main__":
+    main()
