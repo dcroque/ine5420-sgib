@@ -8,6 +8,7 @@ Este projeto foi desenvolvido como parte da disciplina de Computação Gráfica 
 
 - Python 3
 - PyQt5
+- QtDesigner
 
 ## Modo de uso
 
