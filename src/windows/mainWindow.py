@@ -1,7 +1,10 @@
 import sys
-from windows.new_wireframe import Ui_NewWireframe
 from datetime import datetime
 from PyQt5 import QtCore, QtGui, QtWidgets
+from structs import Line, Point, Wireframe
+from viewPortOperation import viewPortTransform
+from windows.newWireframe import Ui_NewWireframe
+
 
 # -*- coding: utf-8 -*-
 
@@ -173,3 +176,15 @@ class Ui_MainWindow(QMainWindow):
         self.group_viewport.setPixmap(canvas)
         self.painter = QtGui.QPainter(self.group_viewport.pixmap())
         self.group_viewport.setObjectName("group_viewport")
+
+    
+    def drawLine(self, point1: Point, point2: Point) -> None:
+        transformedPoint1 = viewPortTransform(point1)
+        transformedPoint2 = viewPortTransform(point2)
+        self.displayFrame.update()
+        self.painter.setPen(QtGui.QPen(QtCore.Qt.red, 5))
+        self.painter.drawLine(transformedPoint1.x, transformedPoint1.y, transformedPoint2.x, transformedPoint2.y)
+
+    def drawWireframe(self, drawable: Wireframe) -> None:
+        for x in range(0, len(drawable) - 1):
+            self.drawLine(drawable[x], drawable[x+1])

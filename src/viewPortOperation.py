@@ -1,5 +1,5 @@
 from structs import Point
-import default_config as dc
+import defaultConfig as dc
 
 def viewPortTransform(point: Point) -> Point:
     x = (point.x - dc.XW_MIN) / (dc.XW_MAX - dc.XW_MIN) * (dc.XV_MAX - dc.XV_MIN)
