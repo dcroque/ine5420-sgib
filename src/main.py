@@ -6,6 +6,7 @@ def main():
     app = QApplication(sys.argv)
     ex = Ui_MainWindow()
     ex.setupUi(ex)
+    ex.setUpPixmap()
     ex.setupButtons()
     ex.show()
     sys.exit(app.exec_())
