@@ -1,6 +1,7 @@
 import sys
 from windows.new_wireframe import Ui_NewWireframe
 from datetime import datetime
+from PyQt5 import QtCore, QtGui, QtWidgets
 
 # -*- coding: utf-8 -*-
 
@@ -69,12 +70,9 @@ class Ui_MainWindow(QMainWindow):
         self.log = QTextBrowser(self.centralwidget)
         self.log.setObjectName(u"log")
         self.log.setGeometry(QRect(180, 450, 611, 141))
-        self.group_viewport = QGroupBox(self.centralwidget)
+        self.group_viewport = QtWidgets.QLabel(self.centralwidget)
         self.group_viewport.setObjectName(u"group_viewport")
         self.group_viewport.setGeometry(QRect(180, 0, 611, 441))
-        self.viewport_size = QPushButton(self.group_viewport)
-        self.viewport_size.setObjectName(u"viewport_size")
-        self.viewport_size.setGeometry(QRect(10, 30, 591, 401))
         MainWindow.setCentralWidget(self.centralwidget)
 
         self.retranslateUi(MainWindow)
@@ -96,8 +94,7 @@ class Ui_MainWindow(QMainWindow):
         self.obj_button_delete.setText(QCoreApplication.translate("MainWindow", u"Delete", None))
         self.obj_button_save.setText(QCoreApplication.translate("MainWindow", u"Save", None))
         self.obj_button_load.setText(QCoreApplication.translate("MainWindow", u"Load", None))
-        self.group_viewport.setTitle(QCoreApplication.translate("MainWindow", u"Viewport", None))
-        self.viewport_size.setText(QCoreApplication.translate("MainWindow", u"viewport", None))
+        self.group_viewport.setText(QCoreApplication.translate("MainWindow", u"Viewport", None))
     # retranslateUi
 
 ################################################################################
@@ -169,3 +166,10 @@ class Ui_MainWindow(QMainWindow):
         ex.setupButtons()
         ex.show()
         ex.exec()
+
+    def setUpPixmap(self):
+        canvas = QtGui.QPixmap(611, 401)
+        canvas.fill(QtGui.QColor("black"))
+        self.group_viewport.setPixmap(canvas)
+        self.painter = QtGui.QPainter(self.group_viewport.pixmap())
+        self.group_viewport.setObjectName("group_viewport")
