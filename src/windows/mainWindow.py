@@ -1,15 +1,16 @@
 import sys
 from datetime import datetime
+from typing import List
 from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5.QtWidgets import QApplication
 from structs import Line, Point, Wireframe
 from viewPortOperation import viewPortTransform
 from windows.newWireframe import Ui_NewWireframe
 
-
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'MainWindowFgJYrU.ui'
+## Form generated from reading UI file 'MainWindowdmKYeC.ui'
 ##
 ## Created by: Qt User Interface Compiler version 5.15.2
 ##
@@ -28,142 +29,147 @@ class Ui_MainWindow(QMainWindow):
         MainWindow.resize(800, 600)
         self.centralwidget = QWidget(MainWindow)
         self.centralwidget.setObjectName(u"centralwidget")
-        self.group_navigation = QGroupBox(self.centralwidget)
-        self.group_navigation.setObjectName(u"group_navigation")
-        self.group_navigation.setGeometry(QRect(0, 300, 171, 291))
-        self.nav_button_up = QPushButton(self.group_navigation)
-        self.nav_button_up.setObjectName(u"nav_button_up")
-        self.nav_button_up.setGeometry(QRect(60, 40, 51, 31))
-        self.nav_button_down = QPushButton(self.group_navigation)
-        self.nav_button_down.setObjectName(u"nav_button_down")
-        self.nav_button_down.setGeometry(QRect(60, 70, 51, 31))
-        self.nav_button_left = QPushButton(self.group_navigation)
-        self.nav_button_left.setObjectName(u"nav_button_left")
-        self.nav_button_left.setGeometry(QRect(10, 50, 51, 41))
-        self.nav_button_right = QPushButton(self.group_navigation)
-        self.nav_button_right.setObjectName(u"nav_button_right")
-        self.nav_button_right.setGeometry(QRect(110, 50, 51, 41))
-        self.nav_button_out = QPushButton(self.group_navigation)
-        self.nav_button_out.setObjectName(u"nav_button_out")
-        self.nav_button_out.setGeometry(QRect(120, 100, 31, 21))
-        self.nav_button_in = QPushButton(self.group_navigation)
-        self.nav_button_in.setObjectName(u"nav_button_in")
-        self.nav_button_in.setGeometry(QRect(20, 100, 31, 21))
-        self.nav_button_in.setCheckable(False)
-        self.nav_button_in.setAutoDefault(False)
-        self.nav_button_in.setFlat(False)
-        self.group_objects = QGroupBox(self.centralwidget)
-        self.group_objects.setObjectName(u"group_objects")
-        self.group_objects.setGeometry(QRect(0, 0, 171, 301))
-        self.obj_button_new = QPushButton(self.group_objects)
-        self.obj_button_new.setObjectName(u"obj_button_new")
-        self.obj_button_new.setGeometry(QRect(10, 220, 71, 31))
-        self.obj_button_delete = QPushButton(self.group_objects)
-        self.obj_button_delete.setObjectName(u"obj_button_delete")
-        self.obj_button_delete.setGeometry(QRect(90, 220, 71, 31))
-        self.obj_button_save = QPushButton(self.group_objects)
-        self.obj_button_save.setObjectName(u"obj_button_save")
-        self.obj_button_save.setGeometry(QRect(10, 260, 71, 31))
-        self.obj_button_load = QPushButton(self.group_objects)
-        self.obj_button_load.setObjectName(u"obj_button_load")
-        self.obj_button_load.setGeometry(QRect(90, 260, 71, 31))
-        self.listWidget = QListWidget(self.group_objects)
-        self.listWidget.setObjectName(u"listWidget")
-        self.listWidget.setGeometry(QRect(10, 30, 151, 181))
+        self.groupNavigation = QGroupBox(self.centralwidget)
+        self.groupNavigation.setObjectName(u"groupNavigation")
+        self.groupNavigation.setGeometry(QRect(0, 300, 171, 291))
+        self.navButtonUp = QPushButton(self.groupNavigation)
+        self.navButtonUp.setObjectName(u"navButtonUp")
+        self.navButtonUp.setGeometry(QRect(60, 40, 51, 31))
+        self.navButtonDown = QPushButton(self.groupNavigation)
+        self.navButtonDown.setObjectName(u"navButtonDown")
+        self.navButtonDown.setGeometry(QRect(60, 70, 51, 31))
+        self.navButtonLeft = QPushButton(self.groupNavigation)
+        self.navButtonLeft.setObjectName(u"navButtonLeft")
+        self.navButtonLeft.setGeometry(QRect(10, 50, 51, 41))
+        self.navButtonRight = QPushButton(self.groupNavigation)
+        self.navButtonRight.setObjectName(u"navButtonRight")
+        self.navButtonRight.setGeometry(QRect(110, 50, 51, 41))
+        self.navButtonOut = QPushButton(self.groupNavigation)
+        self.navButtonOut.setObjectName(u"navButtonOut")
+        self.navButtonOut.setGeometry(QRect(120, 100, 31, 21))
+        self.navButtonIn = QPushButton(self.groupNavigation)
+        self.navButtonIn.setObjectName(u"navButtonIn")
+        self.navButtonIn.setGeometry(QRect(20, 100, 31, 21))
+        self.navButtonIn.setCheckable(False)
+        self.navButtonIn.setAutoDefault(False)
+        self.navButtonIn.setFlat(False)
+        self.groupObjects = QGroupBox(self.centralwidget)
+        self.groupObjects.setObjectName(u"groupObjects")
+        self.groupObjects.setGeometry(QRect(0, 0, 171, 301))
+        self.objButtonNew = QPushButton(self.groupObjects)
+        self.objButtonNew.setObjectName(u"objButtonNew")
+        self.objButtonNew.setGeometry(QRect(10, 220, 71, 31))
+        self.objButtonDelete = QPushButton(self.groupObjects)
+        self.objButtonDelete.setObjectName(u"objButtonDelete")
+        self.objButtonDelete.setGeometry(QRect(90, 220, 71, 31))
+        self.objButtonSave = QPushButton(self.groupObjects)
+        self.objButtonSave.setObjectName(u"objButtonSave")
+        self.objButtonSave.setGeometry(QRect(10, 260, 71, 31))
+        self.objButtonLoad = QPushButton(self.groupObjects)
+        self.objButtonLoad.setObjectName(u"objButtonLoad")
+        self.objButtonLoad.setGeometry(QRect(90, 260, 71, 31))
+        self.listObjects = QListWidget(self.groupObjects)
+        self.listObjects.setObjectName(u"listObjects")
+        self.listObjects.setGeometry(QRect(10, 30, 151, 181))
         self.log = QTextBrowser(self.centralwidget)
         self.log.setObjectName(u"log")
         self.log.setGeometry(QRect(180, 450, 611, 141))
-        self.group_viewport = QtWidgets.QLabel(self.centralwidget)
-        self.group_viewport.setObjectName(u"group_viewport")
-        self.group_viewport.setGeometry(QRect(180, 0, 611, 441))
+        self.groupViewport = QtWidgets.QLabel(self.centralwidget)
+        self.groupViewport.setObjectName(u"groupViewport")
+        self.groupViewport.setGeometry(QRect(180, 0, 611, 441))
         MainWindow.setCentralWidget(self.centralwidget)
 
         self.retranslateUi(MainWindow)
+
+        self.navButtonIn.setDefault(False)
+
 
         QMetaObject.connectSlotsByName(MainWindow)
     # setupUi
 
     def retranslateUi(self, MainWindow):
         MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", u"MainWindow", None))
-        self.group_navigation.setTitle(QCoreApplication.translate("MainWindow", u"Navigation", None))
-        self.nav_button_up.setText(QCoreApplication.translate("MainWindow", u"Up", None))
-        self.nav_button_down.setText(QCoreApplication.translate("MainWindow", u"Down", None))
-        self.nav_button_left.setText(QCoreApplication.translate("MainWindow", u"Left", None))
-        self.nav_button_right.setText(QCoreApplication.translate("MainWindow", u"Right", None))
-        self.nav_button_out.setText(QCoreApplication.translate("MainWindow", u"Out", None))
-        self.nav_button_in.setText(QCoreApplication.translate("MainWindow", u"In", None))
-        self.group_objects.setTitle(QCoreApplication.translate("MainWindow", u"Objects", None))
-        self.obj_button_new.setText(QCoreApplication.translate("MainWindow", u"New", None))
-        self.obj_button_delete.setText(QCoreApplication.translate("MainWindow", u"Delete", None))
-        self.obj_button_save.setText(QCoreApplication.translate("MainWindow", u"Save", None))
-        self.obj_button_load.setText(QCoreApplication.translate("MainWindow", u"Load", None))
-        self.group_viewport.setText(QCoreApplication.translate("MainWindow", u"Viewport", None))
+        self.groupNavigation.setTitle(QCoreApplication.translate("MainWindow", u"Navigation", None))
+        self.navButtonUp.setText(QCoreApplication.translate("MainWindow", u"Up", None))
+        self.navButtonDown.setText(QCoreApplication.translate("MainWindow", u"Down", None))
+        self.navButtonLeft.setText(QCoreApplication.translate("MainWindow", u"Left", None))
+        self.navButtonRight.setText(QCoreApplication.translate("MainWindow", u"Right", None))
+        self.navButtonOut.setText(QCoreApplication.translate("MainWindow", u"Out", None))
+        self.navButtonIn.setText(QCoreApplication.translate("MainWindow", u"In", None))
+        self.groupObjects.setTitle(QCoreApplication.translate("MainWindow", u"Objects", None))
+        self.objButtonNew.setText(QCoreApplication.translate("MainWindow", u"New", None))
+        self.objButtonDelete.setText(QCoreApplication.translate("MainWindow", u"Delete", None))
+        self.objButtonSave.setText(QCoreApplication.translate("MainWindow", u"Save", None))
+        self.objButtonLoad.setText(QCoreApplication.translate("MainWindow", u"Load", None))
+        self.groupViewport.setText(QCoreApplication.translate("MainWindow", u"Viewport", None))
     # retranslateUi
 
 ################################################################################
 
     def setupButtons(self):
-        self.nav_button_up.clicked.connect(lambda: self.navigation(up = True))
-        self.nav_button_down.clicked.connect(lambda: self.navigation(down = True))
-        self.nav_button_left.clicked.connect(lambda: self.navigation(left = True))
-        self.nav_button_right.clicked.connect(lambda: self.navigation(right = True))
-        self.nav_button_out.clicked.connect(lambda: self.navigation(zoom_out = True))
-        self.nav_button_in.clicked.connect(lambda: self.navigation(zoom_in = True))
+        self.navButtonUp.clicked.connect(lambda: self.navigation(up = True))
+        self.navButtonDown.clicked.connect(lambda: self.navigation(down = True))
+        self.navButtonLeft.clicked.connect(lambda: self.navigation(left = True))
+        self.navButtonRight.clicked.connect(lambda: self.navigation(right = True))
+        self.navButtonOut.clicked.connect(lambda: self.navigation(zoomOut = True))
+        self.navButtonIn.clicked.connect(lambda: self.navigation(zoomIn = True))
 
-        self.obj_button_new.clicked.connect(lambda: self.object_action(new = True))
-        self.obj_button_delete.clicked.connect(lambda: self.object_action(delete = True))
-        self.obj_button_save.clicked.connect(lambda: self.object_action(save = True))
-        self.obj_button_load.clicked.connect(lambda: self.object_action(load = True))
+        self.objButtonNew.clicked.connect(lambda: self.objectAction(new = True))
+        self.objButtonDelete.clicked.connect(lambda: self.objectAction(delete = True))
+        self.objButtonSave.clicked.connect(lambda: self.objectAction(save = True))
+        self.objButtonLoad.clicked.connect(lambda: self.objectAction(load = True))
 
-    def navigation(self, up = False, down = False, left = False, right = False, zoom_in = False, zoom_out = False):
-        console_log = "Viewport navigation: "
+    def navigation(self, up = False, down = False, left = False, right = False, zoomIn = False, zoomOut = False):
+        consoleLog = "Viewport navigation: "
         
         if up:
-            console_log += "Move up"
+            consoleLog += "Move up"
         elif down:
-            console_log += "Move down"
+            consoleLog += "Move down"
         elif left:
-            console_log += "Move left"
+            consoleLog += "Move left"
         elif right:
-            console_log += "Move right"
-        elif zoom_in:
-            console_log += "Zoom in"
-        elif zoom_out:
-            console_log += "Zoom out"
+            consoleLog += "Move right"
+        elif zoomIn:
+            consoleLog += "Zoom in"
+        elif zoomOut:
+            consoleLog += "Zoom out"
         else:
             pass
 
-        self.log_message(console_log)
+        self.logMessage(consoleLog)
 
-    def object_action(self, new = False, delete = False, save = False, load = False):
-        console_log = "Object action: "
+    def objectAction(self, new = False, delete = False, save = False, load = False):
+        consoleLog = "Object action: "
         
         if new:
-            console_log += "Opening new wireframe window"
+            consoleLog += "Opening new wireframe window"
         elif delete:
-            console_log += "Deleting object"
+            consoleLog += "Deleting object"
         elif save:
-            console_log += "Save object (NOT IMPLEMENTED)"
+            consoleLog += "Save object (NOT IMPLEMENTED)"
         elif load:
-            console_log += "Load object (NOT IMPLEMENTED)"
+            consoleLog += "Load object (NOT IMPLEMENTED)"
         else:
             pass
 
         if new:
-            self.log_message(console_log)
-            self.new_wireframe()
+            self.logMessage(consoleLog)
+            self.newWireframe()
         elif delete:
-            for element in self.listWidget.selectedIndexes():
-                console_log += f" {element.row()} from wireframe list"
-                self.listWidget.takeItem(element.row())
-                self.log_message(console_log)
+            for element in self.listObjects.selectedIndexes():
+                consoleLog += f" {element.row()} from wireframe list"
+                self.listObjects.takeItem(element.row())
+                self.logMessage(consoleLog)
+        else:
+            self.logMessage(consoleLog)
 
-    def log_message(self, message):
-        full_message = f"[{datetime.now().strftime('%H:%M:%S')}] {message}"
-        self.log.append(full_message)
-        print(full_message)
+    def logMessage(self, message):
+        fullMessage = f"[{datetime.now().strftime('%H:%M:%S')}] {message}"
+        self.log.append(fullMessage)
+        print(fullMessage)
 
-    def new_wireframe(self):
+    def newWireframe(self):
         ex = Ui_NewWireframe(self)
         ex.setupUi(ex)
         ex.setupButtons()
@@ -173,9 +179,9 @@ class Ui_MainWindow(QMainWindow):
     def setUpPixmap(self):
         canvas = QtGui.QPixmap(611, 401)
         canvas.fill(QtGui.QColor("black"))
-        self.group_viewport.setPixmap(canvas)
-        self.painter = QtGui.QPainter(self.group_viewport.pixmap())
-        self.group_viewport.setObjectName("group_viewport")
+        self.groupViewport.setPixmap(canvas)
+        self.painter = QtGui.QPainter(self.groupViewport.pixmap())
+        self.groupViewport.setObjectName("groupViewport")
 
     
     def drawLine(self, point1: Point, point2: Point) -> None:
@@ -188,3 +194,15 @@ class Ui_MainWindow(QMainWindow):
     def drawWireframe(self, drawable: Wireframe) -> None:
         for x in range(0, len(drawable) - 1):
             self.drawLine(drawable[x], drawable[x+1])
+
+class MainWindow:
+    def __init__(self, argv: List[str]):
+        self.app = QApplication(argv)
+        self.mainWindow = Ui_MainWindow()
+        self.mainWindow.setupUi(self.mainWindow)
+        self.mainWindow.setUpPixmap()
+        self.mainWindow.setupButtons()
+
+    def exec(self):
+        self.mainWindow.show()
+        sys.exit(self.app.exec_())

@@ -1,15 +1,10 @@
 import sys
-from windows.mainWindow import Ui_MainWindow
+from windows.mainWindow import MainWindow as MW
 from PyQt5.QtWidgets import QApplication, QMainWindow
 
 def main():
-    app = QApplication(sys.argv)
-    ex = Ui_MainWindow()
-    ex.setupUi(ex)
-    ex.setUpPixmap()
-    ex.setupButtons()
-    ex.show()
-    sys.exit(app.exec_())
+    app = MW(sys.argv)
+    app.exec()
 
 
 if __name__ == "__main__":
