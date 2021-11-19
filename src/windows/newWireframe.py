@@ -1,4 +1,7 @@
-        # -*- coding: utf-8 -*-
+from structs import Point, Line, Wireframe
+from typing import Union
+
+# -*- coding: utf-8 -*-
 
 ################################################################################
 ## Form generated from reading UI file 'NewPointszzvZj.ui'
@@ -93,16 +96,18 @@ class Ui_NewWireframe(QDialog):
 ################################################################################
 
     def __init__(self, parent) -> None:
-        super().__init__(parent)
+        super().__init__()
         self.mainWindow = parent
+        self.object = None
+        self.points = []
 
-    def setupButtons(self):
+    def setupButtons(self) -> None:
         self.buttonAdd.clicked.connect(lambda: self.addPoint())
         self.buttonCancel.clicked.connect(lambda: self.finish())
         self.buttonFinish.clicked.connect(lambda: self.finish(add = True))
         self.buttonDeletePoint.clicked.connect(lambda: self.deletePoint())
 
-    def addPoint(self):
+    def addPoint(self) -> None: 
         consoleLog = "Add point: "
 
         coord = [None]*3
@@ -115,22 +120,38 @@ class Ui_NewWireframe(QDialog):
             try:
                 coord[i] = float(coord[i])
             except:
-                isFloat = False
-                consoleLog += "Error! Non-float value"
+                if i == 2:
+                    coord[i] = 0
+                    consoleLog += "Error! Non-float value for Z, setting as 0"
+                else:
+                    isFloat = False
+                    consoleLog += "Error! Non-float value"
 
         if isFloat:
             consoleLog += f"Adding point ({coord[0]:.2f},{coord[1]:.2f},{coord[2]:.2f})"
             self.listPoints.addItem(f"({coord[0]:.2f},{coord[1]:.2f},{coord[2]:.2f})")
+            self.points.append(Point(coord[0], coord[1], coord[2]))
 
         self.logMessage(consoleLog)
 
-    def deletePoint(self):
+    def deletePoint(self) -> None:
         for element in self.listPoints.selectedIndexes():
             consoleLog = f"Delete item: Deleting item {element.row()} from wireframe list"
             self.listPoints.takeItem(element.row())
             self.logMessage(consoleLog)
 
-    def finish(self, add = False):
+    def assembleObject(self) -> Union[None, Point, Line, Wireframe]:
+        nPoints = len(self.points)
+        if nPoints == 0:
+            return None
+        elif nPoints == 1:
+            return self.points[0]
+        elif nPoints == 2:
+            return Line(self.points[0], self.points[1])
+        else:
+            return Wireframe(self.points, self.inputName.toPlainText())
+
+    def finish(self, add: bool = False) -> None:
         consoleLog = "Finishing: "
         if add:
             self.logMessage(self.inputName.toPlainText())
@@ -138,6 +159,9 @@ class Ui_NewWireframe(QDialog):
                 self.mainWindow.listObjects.addItem("Wireframe")
             else:
                 self.mainWindow.listObjects.addItem(self.inputName.toPlainText())
+            obj = self.assembleObject()
+            if obj is not None:
+                self.mainWindow.displayFile.append(obj)
         else:
             consoleLog += "No actions"
 
@@ -145,6 +169,16 @@ class Ui_NewWireframe(QDialog):
 
         self.close()
 
-    def logMessage(self, message):
+    def logMessage(self, message) -> None:
         message = f"[NEW WIREFRAME] {message}"
         self.mainWindow.logMessage(message)
+
+class NewWireframeWindow:
+    def __init__(self, parent) -> None:
+        self.window = Ui_NewWireframe(parent)
+        self.window.setupUi(self.window)
+        self.window.setupButtons()
+
+    def exec(self) -> None:
+        self.window.show()
+        self.window.exec()
