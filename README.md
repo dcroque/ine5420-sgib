@@ -14,6 +14,4 @@ Este projeto foi desenvolvido como parte da disciplina de Computação Gráfica 
 
 Após clonar ou baixar o repositório, dentro da pasta **src**, execute o seguinte comando para testar a aplicação:
 
-> python3 main.py --test
-
-Se a mensagem **Hello World!** for impressa no seu terminal está tudo certo :)
+> python3 main.py
