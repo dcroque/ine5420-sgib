@@ -1,11 +1,12 @@
 import sys
 from datetime import datetime
-from typing import List
+from typing import List, Union
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QApplication
-from structs import Line, Point, Wireframe
+from structs import Line, Point, Wireframe, DisplayFile
 from viewPortOperation import viewPortTransform
 from windows.newWireframe import Ui_NewWireframe
+import defaultConfig as default
 
 # -*- coding: utf-8 -*-
 
@@ -106,6 +107,23 @@ class Ui_MainWindow(QMainWindow):
 
 ################################################################################
 
+    def __init__(self, argv: List[str]):
+        self.app = QApplication(argv)
+        self.mainWindow = QMainWindow()
+        self.setupUi(self.mainWindow)
+        self.setUpPixmap()
+        self.setupButtons()
+        self.displayFile = []
+
+        self.windowSize = [default.XW_MIN, default.YW_MIN, default.XW_MAX, default.YW_MAX]
+        self.nav = [0, 0]
+        self.zoom = 1
+
+    def exec(self):
+        self.drawDisplayFile()
+        self.mainWindow.show()
+        sys.exit(self.app.exec_())
+
     def setupButtons(self):
         self.navButtonUp.clicked.connect(lambda: self.navigation(up = True))
         self.navButtonDown.clicked.connect(lambda: self.navigation(down = True))
@@ -119,27 +137,36 @@ class Ui_MainWindow(QMainWindow):
         self.objButtonSave.clicked.connect(lambda: self.objectAction(save = True))
         self.objButtonLoad.clicked.connect(lambda: self.objectAction(load = True))
 
-    def navigation(self, up = False, down = False, left = False, right = False, zoomIn = False, zoomOut = False):
+    def navigation(self, up: bool = False, down: bool = False, left: bool = False, right: bool = False,
+     zoomIn: bool = False, zoomOut: bool = False) -> None:
         consoleLog = "Viewport navigation: "
         
         if up:
-            consoleLog += "Move up"
+            consoleLog += f"Move up: X={self.nav[0]}, Y={self.nav[1]}"
+            self.nav[1] += 10
         elif down:
-            consoleLog += "Move down"
+            consoleLog += f"Move down: X={self.nav[0]}, Y={self.nav[1]}"
+            self.nav[1] -= 10
         elif left:
-            consoleLog += "Move left"
+            consoleLog += f"Move left: X={self.nav[0]}, Y={self.nav[1]}"
+            self.nav[0] -= 10
         elif right:
-            consoleLog += "Move right"
+            consoleLog += f"Move right: X={self.nav[0]}, Y={self.nav[1]}"
+            self.nav[0] += 10
         elif zoomIn:
-            consoleLog += "Zoom in"
+            consoleLog += f"Zoom in: {self.zoom:.2f}"
+            self.zoom -= 0.1
         elif zoomOut:
-            consoleLog += "Zoom out"
+            consoleLog += f"Zoom out: {self.zoom:.2f}"
+            self.zoom += 0.1
         else:
             pass
 
+        self.calculateWindowsSize()
+        self.drawDisplayFile()
         self.logMessage(consoleLog)
 
-    def objectAction(self, new = False, delete = False, save = False, load = False):
+    def objectAction(self, new: bool = False, delete: bool = False, save: bool = False, load: bool = False) -> None:
         consoleLog = "Object action: "
         
         if new:
@@ -160,49 +187,68 @@ class Ui_MainWindow(QMainWindow):
             for element in self.listObjects.selectedIndexes():
                 consoleLog += f" {element.row()} from wireframe list"
                 self.listObjects.takeItem(element.row())
+                self.displayFile.pop(element.row())
                 self.logMessage(consoleLog)
         else:
             self.logMessage(consoleLog)
+        self.drawDisplayFile()
 
-    def logMessage(self, message):
+    def logMessage(self, message: str) -> None:
         fullMessage = f"[{datetime.now().strftime('%H:%M:%S')}] {message}"
         self.log.append(fullMessage)
         print(fullMessage)
 
-    def newWireframe(self):
+    def newWireframe(self) -> None:
         ex = Ui_NewWireframe(self)
         ex.setupUi(ex)
         ex.setupButtons()
         ex.show()
         ex.exec()
 
-    def setUpPixmap(self):
-        canvas = QtGui.QPixmap(611, 401)
+    def setUpPixmap(self) -> None:
+        canvas = QtGui.QPixmap(default.XV_MAX, default.YV_MAX)
         canvas.fill(QtGui.QColor("black"))
         self.groupViewport.setPixmap(canvas)
         self.painter = QtGui.QPainter(self.groupViewport.pixmap())
         self.groupViewport.setObjectName("groupViewport")
 
-    
+    def drawPoint(self, point: Point) -> None:
+        transformedPoint = viewPortTransform(point, self.windowSize)
+        self.groupViewport.update()
+        self.painter.setPen(QtGui.QPen(QtCore.Qt.red, 2))
+        self.painter.drawPoint(transformedPoint.x, transformedPoint.y)
+
     def drawLine(self, point1: Point, point2: Point) -> None:
-        transformedPoint1 = viewPortTransform(point1)
-        transformedPoint2 = viewPortTransform(point2)
-        self.displayFrame.update()
-        self.painter.setPen(QtGui.QPen(QtCore.Qt.red, 5))
+        transformedPoint1 = viewPortTransform(point1, self.windowSize)
+        transformedPoint2 = viewPortTransform(point2, self.windowSize)
+        self.groupViewport.update()
+        self.painter.setPen(QtGui.QPen(QtCore.Qt.red, 2))
         self.painter.drawLine(transformedPoint1.x, transformedPoint1.y, transformedPoint2.x, transformedPoint2.y)
 
     def drawWireframe(self, drawable: Wireframe) -> None:
-        for x in range(0, len(drawable) - 1):
-            self.drawLine(drawable[x], drawable[x+1])
+        for x in range(0, len(drawable.coordinates) - 1):
+            self.drawLine(drawable.coordinates[x], drawable.coordinates[x+1])
 
-class MainWindow:
-    def __init__(self, argv: List[str]):
-        self.app = QApplication(argv)
-        self.mainWindow = Ui_MainWindow()
-        self.mainWindow.setupUi(self.mainWindow)
-        self.mainWindow.setUpPixmap()
-        self.mainWindow.setupButtons()
+    def addDrawableToDisplayFile(self, drawable: Union[Point, Line, Wireframe]) -> None:
+        self.displayFile.add(drawable)
 
-    def exec(self):
-        self.mainWindow.show()
-        sys.exit(self.app.exec_())
+    def calculateWindowsSize(self) -> None:
+        if self.zoom < 0.2:
+            self.zoom = 0.2
+            self.logMessage("Set zoom to 0.2 to prevent overflow!")
+
+        self.windowSize = [default.XW_MIN+self.nav[0], default.YW_MIN+self.nav[1],
+         default.XW_MAX+self.nav[0],default.YW_MAX+self.nav[1]]
+        self.windowSize = [v*self.zoom for v in self.windowSize]
+
+    def drawDisplayFile(self) -> None:
+        self.groupViewport.pixmap().fill(QtGui.QColor("black"))
+        self.groupViewport.update()
+        for drawable in self.displayFile:
+            if type(drawable) == Wireframe:
+                self.drawWireframe(drawable)
+            if type(drawable) == Line:
+                self.drawLine(drawable.point1, drawable.point2)
+            if type(drawable) == Point:
+                print("Que mané desenha 1D. Para de ser bobo, desenha o que existe.")
+                self.drawLine(drawable, drawable)
