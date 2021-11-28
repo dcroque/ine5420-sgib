@@ -6,6 +6,7 @@ from PyQt5.QtWidgets import QApplication
 from structs import Line, Point, Wireframe, DisplayFile
 from viewPortOperation import viewPortTransform
 from windows.newWireframe import Ui_NewWireframe
+from windows.transformationWindow import Ui_TransformationWindow
 import defaultConfig as default
 
 # -*- coding: utf-8 -*-
@@ -54,6 +55,33 @@ class Ui_MainWindow(QMainWindow):
         self.navButtonIn.setCheckable(False)
         self.navButtonIn.setAutoDefault(False)
         self.navButtonIn.setFlat(False)
+        self.groupRotation = QGroupBox(self.groupNavigation)
+        self.groupRotation.setObjectName(u"groupRotation")
+        self.groupRotation.setGeometry(QRect(10, 120, 151, 101))
+        self.rotButtonZ = QPushButton(self.groupRotation)
+        self.rotButtonZ.setObjectName(u"rotButtonZ")
+        self.rotButtonZ.setGeometry(QRect(110, 60, 41, 31))
+        self.rotButtonX = QPushButton(self.groupRotation)
+        self.rotButtonX.setObjectName(u"rotButtonX")
+        self.rotButtonX.setGeometry(QRect(10, 60, 41, 31))
+        self.rotButtonY = QPushButton(self.groupRotation)
+        self.rotButtonY.setObjectName(u"rotButtonY")
+        self.rotButtonY.setGeometry(QRect(60, 60, 41, 31))
+        self.inputDegrees = QTextEdit(self.groupRotation)
+        self.inputDegrees.setObjectName(u"inputDegrees")
+        self.inputDegrees.setGeometry(QRect(60, 30, 91, 31))
+        self.label = QLabel(self.groupRotation)
+        self.label.setObjectName(u"label")
+        self.label.setGeometry(QRect(10, 30, 51, 31))
+        self.label_2 = QLabel(self.groupNavigation)
+        self.label_2.setObjectName(u"label_2")
+        self.label_2.setGeometry(QRect(10, 230, 67, 22))
+        self.zoomButtonPlus = QPushButton(self.groupNavigation)
+        self.zoomButtonPlus.setObjectName(u"zoomButtonPlus")
+        self.zoomButtonPlus.setGeometry(QRect(70, 230, 41, 21))
+        self.zoomButtonMinus = QPushButton(self.groupNavigation)
+        self.zoomButtonMinus.setObjectName(u"zoomButtonMinus")
+        self.zoomButtonMinus.setGeometry(QRect(120, 230, 41, 21))
         self.groupObjects = QGroupBox(self.centralwidget)
         self.groupObjects.setObjectName(u"groupObjects")
         self.groupObjects.setGeometry(QRect(0, 0, 171, 301))
@@ -63,15 +91,12 @@ class Ui_MainWindow(QMainWindow):
         self.objButtonDelete = QPushButton(self.groupObjects)
         self.objButtonDelete.setObjectName(u"objButtonDelete")
         self.objButtonDelete.setGeometry(QRect(90, 220, 71, 31))
-        self.objButtonSave = QPushButton(self.groupObjects)
-        self.objButtonSave.setObjectName(u"objButtonSave")
-        self.objButtonSave.setGeometry(QRect(10, 260, 71, 31))
-        self.objButtonLoad = QPushButton(self.groupObjects)
-        self.objButtonLoad.setObjectName(u"objButtonLoad")
-        self.objButtonLoad.setGeometry(QRect(90, 260, 71, 31))
         self.listObjects = QListWidget(self.groupObjects)
         self.listObjects.setObjectName(u"listObjects")
         self.listObjects.setGeometry(QRect(10, 30, 151, 181))
+        self.objButtonTransform = QPushButton(self.groupObjects)
+        self.objButtonTransform.setObjectName(u"objButtonTransform")
+        self.objButtonTransform.setGeometry(QRect(10, 260, 151, 31))
         self.log = QTextBrowser(self.centralwidget)
         self.log.setObjectName(u"log")
         self.log.setGeometry(QRect(180, 450, 611, 141))
@@ -97,11 +122,18 @@ class Ui_MainWindow(QMainWindow):
         self.navButtonRight.setText(QCoreApplication.translate("MainWindow", u"Right", None))
         self.navButtonOut.setText(QCoreApplication.translate("MainWindow", u"Out", None))
         self.navButtonIn.setText(QCoreApplication.translate("MainWindow", u"In", None))
+        self.groupRotation.setTitle(QCoreApplication.translate("MainWindow", u"Rotation", None))
+        self.rotButtonZ.setText(QCoreApplication.translate("MainWindow", u"Z", None))
+        self.rotButtonX.setText(QCoreApplication.translate("MainWindow", u"X", None))
+        self.rotButtonY.setText(QCoreApplication.translate("MainWindow", u"Y", None))
+        self.label.setText(QCoreApplication.translate("MainWindow", u"Graus: ", None))
+        self.label_2.setText(QCoreApplication.translate("MainWindow", u"Zoom:", None))
+        self.zoomButtonPlus.setText(QCoreApplication.translate("MainWindow", u"+", None))
+        self.zoomButtonMinus.setText(QCoreApplication.translate("MainWindow", u"-", None))
         self.groupObjects.setTitle(QCoreApplication.translate("MainWindow", u"Objects", None))
         self.objButtonNew.setText(QCoreApplication.translate("MainWindow", u"New", None))
         self.objButtonDelete.setText(QCoreApplication.translate("MainWindow", u"Delete", None))
-        self.objButtonSave.setText(QCoreApplication.translate("MainWindow", u"Save", None))
-        self.objButtonLoad.setText(QCoreApplication.translate("MainWindow", u"Load", None))
+        self.objButtonTransform.setText(QCoreApplication.translate("MainWindow", u"Transform", None))
         self.groupViewport.setText(QCoreApplication.translate("MainWindow", u"Viewport", None))
     # retranslateUi
 
@@ -114,10 +146,15 @@ class Ui_MainWindow(QMainWindow):
         self.setUpPixmap()
         self.setupButtons()
         self.displayFile = []
+        self.matrixList = []
 
         self.windowSize = [default.XW_MIN, default.YW_MIN, default.XW_MAX, default.YW_MAX]
         self.nav = [0, 0]
         self.zoom = 1
+
+        # OBJETO DE TESTE 
+        self.displayFile.append(Wireframe([Point(0,0), Point(100,0), Point(100,100), Point(0,100)], "Test"))
+        self.listObjects.addItem("Test")
 
     def exec(self):
         self.drawDisplayFile()
@@ -132,10 +169,20 @@ class Ui_MainWindow(QMainWindow):
         self.navButtonOut.clicked.connect(lambda: self.navigation(zoomOut = True))
         self.navButtonIn.clicked.connect(lambda: self.navigation(zoomIn = True))
 
+        self.rotButtonX.clicked.connect(lambda: self.rotate(X = True))
+        self.rotButtonY.clicked.connect(lambda: self.rotate(Y = True))
+        self.rotButtonZ.clicked.connect(lambda: self.rotate(Z = True))
+
         self.objButtonNew.clicked.connect(lambda: self.objectAction(new = True))
         self.objButtonDelete.clicked.connect(lambda: self.objectAction(delete = True))
-        self.objButtonSave.clicked.connect(lambda: self.objectAction(save = True))
-        self.objButtonLoad.clicked.connect(lambda: self.objectAction(load = True))
+
+        self.zoomButtonMinus.clicked.connect(lambda: self.objectAction(minus = True))
+        self.zoomButtonPlus.clicked.connect(lambda: self.objectAction(plus = True))
+
+        self.objButtonTransform.clicked.connect(lambda: self.objectAction(transform = True))
+
+    def rotate(self, X = False, Y = False, Z = False) -> None:
+        consoleLog = "Viewport rotation: "
 
     def navigation(self, up: bool = False, down: bool = False, left: bool = False, right: bool = False,
      zoomIn: bool = False, zoomOut: bool = False) -> None:
@@ -166,17 +213,19 @@ class Ui_MainWindow(QMainWindow):
         self.drawDisplayFile()
         self.logMessage(consoleLog)
 
-    def objectAction(self, new: bool = False, delete: bool = False, save: bool = False, load: bool = False) -> None:
+    def objectAction(self, new: bool = False, delete: bool = False, minus: bool = False, plus: bool = False, transform: bool = False) -> None:
         consoleLog = "Object action: "
         
         if new:
             consoleLog += "Opening new wireframe window"
         elif delete:
             consoleLog += "Deleting object"
-        elif save:
-            consoleLog += "Save object (NOT IMPLEMENTED)"
-        elif load:
-            consoleLog += "Load object (NOT IMPLEMENTED)"
+        elif minus:
+            consoleLog += "Zooming out object: what's supposed to happen here?"
+        elif plus:
+            consoleLog += "Zooming in object: what's supposed to happen here?"
+        elif transform:
+            consoleLog += "Adding transformation for object"
         else:
             pass
 
@@ -189,6 +238,11 @@ class Ui_MainWindow(QMainWindow):
                 self.listObjects.takeItem(element.row())
                 self.displayFile.pop(element.row())
                 self.logMessage(consoleLog)
+        elif transform:
+            element = 0
+            for element in self.listObjects.selectedIndexes():
+                element = element.row()
+            self.addTransformation()
         else:
             self.logMessage(consoleLog)
         self.drawDisplayFile()
@@ -204,6 +258,17 @@ class Ui_MainWindow(QMainWindow):
         ex.setupButtons()
         ex.show()
         ex.exec()
+
+    def addTransformation(self) -> None:
+        n = len(self.listObjects.selectedIndexes())
+        if n:
+            ex = Ui_TransformationWindow(self)
+            ex.setupUi(ex)
+            ex.setupButtons()
+            ex.show()
+            ex.exec()
+        else:
+            self.logMessage("Error! Please select one object before adding transformations")
 
     def setUpPixmap(self) -> None:
         canvas = QtGui.QPixmap(default.XV_MAX, default.YV_MAX)
@@ -226,8 +291,12 @@ class Ui_MainWindow(QMainWindow):
         self.painter.drawLine(transformedPoint1.x, transformedPoint1.y, transformedPoint2.x, transformedPoint2.y)
 
     def drawWireframe(self, drawable: Wireframe) -> None:
-        for x in range(0, len(drawable.coordinates) - 1):
-            self.drawLine(drawable.coordinates[x], drawable.coordinates[x+1])
+        iterations = len(drawable.coordinates)
+        for x in range(0, iterations):
+            if x == iterations-1:
+                self.drawLine(drawable.coordinates[x], drawable.coordinates[0])
+            else:
+                self.drawLine(drawable.coordinates[x], drawable.coordinates[x+1])
 
     def addDrawableToDisplayFile(self, drawable: Union[Point, Line, Wireframe]) -> None:
         self.displayFile.add(drawable)
